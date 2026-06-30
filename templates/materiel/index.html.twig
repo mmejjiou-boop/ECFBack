@@ -3,6 +3,10 @@
 {% block title %}Materiel index{% endblock %}
 
 {% block body %}
+    <p>
+        Connecté en tant que {{ app.user.userIdentifier }} —
+        <a href="{{ path('app_logout') }}">Se déconnecter</a>
+    </p>
     <h1>Materiel index</h1>
 
     <table class="table">
