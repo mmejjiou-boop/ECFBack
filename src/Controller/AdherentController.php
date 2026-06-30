@@ -8,11 +8,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/adherent')]
+
 final class AdherentController extends AbstractController
 {
     #[Route(name: 'app_adherent_index', methods: ['GET'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function index(AdherentRepository $adherentRepository): Response
     {
         return $this->render('adherent/index.html.twig', [
@@ -21,6 +24,7 @@ final class AdherentController extends AbstractController
     }
 
     #[Route('/new', name: 'app_adherent_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $adherent = new Adherent();
@@ -41,6 +45,7 @@ final class AdherentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_adherent_show', methods: ['GET'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function show(Adherent $adherent): Response
     {
         return $this->render('adherent/show.html.twig', [
@@ -49,6 +54,8 @@ final class AdherentController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_adherent_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
+    
     public function edit(Request $request, Adherent $adherent, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(AdherentType::class, $adherent);
@@ -67,6 +74,7 @@ final class AdherentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_adherent_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, Adherent $adherent, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$adherent->getId(), $request->getPayload()->getString('_token'))) {

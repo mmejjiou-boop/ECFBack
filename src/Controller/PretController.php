@@ -10,11 +10,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/pret')]
 final class PretController extends AbstractController
 {
     #[Route(name: 'app_pret_index', methods: ['GET'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]  
     public function index(PretRepository $pretRepository): Response
     {
         return $this->render('pret/index.html.twig', [
@@ -23,6 +25,7 @@ final class PretController extends AbstractController
     }
 
     #[Route('/new', name: 'app_pret_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]  
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $pret = new Pret();
@@ -43,6 +46,7 @@ final class PretController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_pret_show', methods: ['GET'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function show(Pret $pret): Response
     {
         return $this->render('pret/show.html.twig', [
@@ -51,6 +55,7 @@ final class PretController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_pret_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function edit(Request $request, Pret $pret, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(PretType::class, $pret);
@@ -69,6 +74,7 @@ final class PretController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_pret_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, Pret $pret, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$pret->getId(), $request->getPayload()->getString('_token'))) {
