@@ -6,8 +6,10 @@ use App\Repository\PretRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/pret', name: 'api_prets_')]
+#[IsGranted('ROLE_ADMIN')]
 final class PretApiController extends AbstractController
 {
     #[Route(name: 'list', methods: ['GET'])]
