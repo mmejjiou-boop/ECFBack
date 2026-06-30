@@ -23,11 +23,13 @@ class Pret
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $date_retour_effective = null;
 
-    #[ORM\Column]
-    private ?int $materiel_id = null;
+    #[ORM\ManyToOne(targetEntity: Materiel::class)]
+    #[ORM\JoinColumn(name: 'materiel_id', referencedColumnName: 'id', nullable: false)]
+    private ?Materiel $materiel = null;
 
-    #[ORM\Column]
-    private ?int $adherent_id = null;
+    #[ORM\ManyToOne(targetEntity: Adherent::class)]
+    #[ORM\JoinColumn(name: 'adherent_id', referencedColumnName: 'id', nullable: false)]
+    private ?Adherent $adherent = null;
 
     public function getId(): ?int
     {
@@ -77,26 +79,26 @@ class Pret
         return $this;
     }
 
-    public function getMaterielId(): ?int
+    public function getMateriel(): ?Materiel
     {
-        return $this->materiel_id;
+        return $this->materiel;
     }
 
-    public function setMaterielId(int $materiel_id): static
+    public function setMateriel(?Materiel $materiel): static
     {
-        $this->materiel_id = $materiel_id;
+        $this->materiel = $materiel;
 
         return $this;
     }
 
-    public function getAdherentId(): ?int
+    public function getAdherent(): ?Adherent
     {
-        return $this->adherent_id;
+        return $this->adherent;
     }
 
-    public function setAdherentId(int $adherent_id): static
+    public function setAdherent(?Adherent $adherent): static
     {
-        $this->adherent_id = $adherent_id;
+        $this->adherent = $adherent;
 
         return $this;
     }

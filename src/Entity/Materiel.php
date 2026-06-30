@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\MaterielRepository;
@@ -20,8 +19,8 @@ class Materiel
     #[ORM\Column(length: 255)]
     private ?string $categorie = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $referance = null;
+    #[ORM\Column(name: 'referance', length: 255)]
+    private ?string $reference = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $date_achat = null;
@@ -37,7 +36,6 @@ class Materiel
     public function setId(int $id): static
     {
         $this->id = $id;
-
         return $this;
     }
 
@@ -49,7 +47,6 @@ class Materiel
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -61,19 +58,17 @@ class Materiel
     public function setCategorie(string $categorie): static
     {
         $this->categorie = $categorie;
-
         return $this;
     }
 
-    public function getReferance(): ?string
+    public function getReference(): ?string
     {
-        return $this->referance;
+        return $this->reference;
     }
 
-    public function setReferance(string $referance): static
+    public function setReference(string $reference): static
     {
-        $this->referance = $referance;
-
+        $this->reference = $reference;
         return $this;
     }
 
@@ -85,7 +80,6 @@ class Materiel
     public function setDateAchat(\DateTime $date_achat): static
     {
         $this->date_achat = $date_achat;
-
         return $this;
     }
 
@@ -97,7 +91,6 @@ class Materiel
     public function setDisponible(bool $disponible): static
     {
         $this->disponible = $disponible;
-
         return $this;
     }
 }

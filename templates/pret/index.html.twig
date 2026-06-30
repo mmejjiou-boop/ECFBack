@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pret index{% endblock %}
+
+{% block body %}
+    <h1>Pret index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date_pret</th>
+                <th>Date_retour_prevue</th>
+                <th>Date_retour_effective</th>
+                <th>Materiel_id</th>
+                <th>Adherent_id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pret in prets %}
+            <tr>
+                <td>{{ pret.id }}</td>
+                <td>{{ pret.datePret ? pret.datePret|date('Y-m-d') : '' }}</td>
+                <td>{{ pret.dateRetourPrevue ? pret.dateRetourPrevue|date('Y-m-d') : '' }}</td>
+                <td>{{ pret.dateRetourEffective ? pret.dateRetourEffective|date('Y-m-d') : '' }}</td>
+                <td>{{ pret.materiel.nom }}</td>
+                <td>{{ pret.adherent.nom }}</td>
+                <td>
+                    <a href="{{ path('app_pret_show', {'id': pret.id}) }}">show</a>
+                    <a href="{{ path('app_pret_edit', {'id': pret.id}) }}">edit</a>
+                    <a href="{{ path('app_pret_delete', {'id': pret.id}) }}">delete</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_pret_new') }}">Create new</a>
+{% endblock %}

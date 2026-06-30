@@ -1,84 +1,79 @@
 <?php
 namespace App\Controller;
 use App\Entity\Adherent;
+use App\Form\AdherentType;
 use App\Repository\AdherentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/adherents', name: 'api_adherents_')]
-class AdherentController extends AbstractController
+#[Route('/adherent')]
+final class AdherentController extends AbstractController
 {
-    public function __construct(
-        private AdherentRepository $adherentRepository,
-        private EntityManagerInterface $em
-    ) {}
-
-    #[Route('', name: 'list', methods: ['GET'])]
-    public function list(): JsonResponse
+    #[Route(name: 'app_adherent_index', methods: ['GET'])]
+    public function index(AdherentRepository $adherentRepository): Response
     {
-        $adherent = $this->adherentRepository->findAll();
-        $data = array_map(fn(Adherent $adherent) => [
-            'id' => $adherent->getId(),
-            'nom' => $adherent->getNom(),
-            'prenom' => $adherent->getPrenom(),
-            'email' => $adherent->getEmail(),
-            'dateAdhesion' => $adherent->getDateAdhesion(),
-        ], $adherent);
-
-
-      return $this->json($data);  
+        return $this->render('adherent/index.html.twig', [
+            'adherents' => $adherentRepository->findAll(),
+        ]);
     }
 
-    #[Route('', name: 'create', methods: ['POST'])]
-    public function create(Request $request): JsonResponse
+    #[Route('/new', name: 'app_adherent_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $data = json_decode($request->getContent(), true);
-        if (!$data) return $this->json(['error' => 'Invalid JSON'], 400);
         $adherent = new Adherent();
-        $adherent->setNom($data['nom'] ?? null);
-        $adherent->setPrenom($data['prenom'] ?? null);
-        $adherent->setEmail($data['email'] ?? null);
-        if (!empty($data['dateAdhesion'])) 
-            $adherent->setDateAdhesion(new \DateTime($data['dateAdhesion']));
-        $this->em->persist($adherent);
-        $this->em->flush();
+        $form = $this->createForm(AdherentType::class, $adherent);
+        $form->handleRequest($request);
 
-        return $this->json(['message' => 'le adherent a bien été créé'], 201);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($adherent);
+            $entityManager->flush();
 
+            return $this->redirectToRoute('app_adherent_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('adherent/new.html.twig', [
+            'adherent' => $adherent,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/{id}', name: 'update', methods: ['PUT'])]
-    public function update(int $id, Request $request): JsonResponse
+    #[Route('/{id}', name: 'app_adherent_show', methods: ['GET'])]
+    public function show(Adherent $adherent): Response
     {
-        // ici je récupere le matérielcen utilisant l id de l'urlet je le met dans $materiel
-        $adherent = $this->adherentRepository->find($id);
-        // si le matériel n'existe pas je retourne une erreur 404
-        if (!$adherent) return $this->json(['error' => 'Adherent not found'], 404);
-        // là je récupere les données  de la requete et je les met dans $data
-        $data = json_decode($request->getContent(), true);
-        // si les données sont invalides je retourne une erreur 400
-        if (!$data) return $this->json(['error' => 'Invalid JSON'], 400);
-        // là je met à jour les données du (nom et prenom et email et dateAdhesion) avec les données de la requete
-        if (array_key_exists('nom', $data)) {$adherent->setNom($data['nom']);}
-        if (array_key_exists('prenom', $data)) {$adherent->setPrenom($data['prenom']);}
-        if (array_key_exists('email', $data)) {$adherent->setEmail($data['email']);}
-        if (array_key_exists('dateAdhesion', $data)) {$adherent->setDateAdhesion($data['dateAdhesion'] ? new \DateTime($data['dateAdhesion']) : null );}
-        $this->em->flush();
-        return $this->json(['message' => 'le adherent a bien été mis à jour']);
+        return $this->render('adherent/show.html.twig', [
+            'adherent' => $adherent,
+        ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(int $id): JsonResponse
+    #[Route('/{id}/edit', name: 'app_adherent_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Adherent $adherent, EntityManagerInterface $entityManager): Response
     {
-        $adherent = $this->adherentRepository->find($id);
-        if (!$adherent) return $this->json(['error' => 'Adherent not found'], 404);
-        $this->em->remove($adherent);
-        $this->em->flush();
-        return $this->json(['message' => 'le adherent a bien été supprimé']);
+        $form = $this->createForm(AdherentType::class, $adherent);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
 
+            return $this->redirectToRoute('app_adherent_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('adherent/edit.html.twig', [
+            'adherent' => $adherent,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_adherent_delete', methods: ['POST'])]
+    public function delete(Request $request, Adherent $adherent, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$adherent->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($adherent);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_adherent_index', [], Response::HTTP_SEE_OTHER);
     }
 }
