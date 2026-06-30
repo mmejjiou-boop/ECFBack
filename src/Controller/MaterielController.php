@@ -78,6 +78,7 @@ final class MaterielController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$materiel->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($materiel);
             $entityManager->flush();
+            dd($this->getUser()->getRoles());
         }
 
         return $this->redirectToRoute('app_materiel_index', [], Response::HTTP_SEE_OTHER);

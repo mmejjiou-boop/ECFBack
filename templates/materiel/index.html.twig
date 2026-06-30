@@ -3,10 +3,7 @@
 {% block title %}Materiel index{% endblock %}
 
 {% block body %}
-    <p>
-        Connecté en tant que {{ app.user.userIdentifier }} —
-        <a href="{{ path('app_logout') }}">Se déconnecter</a>
-    </p>
+
     <h1>Materiel index</h1>
 
     <table class="table">
@@ -33,7 +30,9 @@
                 <td>
                     <a href="{{ path('app_materiel_show', {'id': materiel.id}) }}">show</a>
                     <a href="{{ path('app_materiel_edit', {'id': materiel.id}) }}">edit</a>
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('app_materiel_delete', {'id': materiel.id}) }}">delete</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
@@ -45,4 +44,9 @@
     </table>
 
     <a href="{{ path('app_materiel_new') }}">Create new</a>
+    <div>
+    <a href="./adherent">adhérents</a>
+    <a href="./pret">prêts</a>
+
+</div>
 {% endblock %}
